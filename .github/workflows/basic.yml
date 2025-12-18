@@ -32,6 +32,16 @@ jobs:
         run: |
           cd backend
           mvn clean verify -Dtest="es.goeventsnow.backend.unit.EventTest"
+      - name: SonarQube Analysis (Backend)
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          cd backend
+          mvn sonar:sonar \
+            -Dsonar.projectKey=goeventsnow-backend \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         
   client-quality:
     name: Client - Basic CI
@@ -59,3 +69,11 @@ jobs:
         run: |
           cd frontend
           npx ng test  --include=src/app/app.component.spec.ts  --coverage  
+      - name: SonarQube Analysis (Frontend)
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd frontend
+          npx sonar-scanner \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
