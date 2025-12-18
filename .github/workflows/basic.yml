@@ -11,6 +11,15 @@ jobs:
   server-quality:
     name: Server - Basic CI
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: goeventsnow
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,7 +31,7 @@ jobs:
       - name: Compile Server & Run Backend Unit Test
         run: |
           cd backend
-          mvn clean verify -Dtest=es.goeventsnow.backend.unit.EventTest
+          mvn clean verify -Dtest="es.goeventsnow.backend.unit.EventTest"
         
   client-quality:
     name: Client - Basic CI
