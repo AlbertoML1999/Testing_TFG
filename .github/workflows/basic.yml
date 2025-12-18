@@ -22,7 +22,7 @@ jobs:
       - name: Compile Server & Run Backend Unit Test
         run: |
           cd backend
-          mvn clean verify -Dtest="es.goeventsnow.backend.unit.EventTest" 
+          mvn clean verify -Dtest=es.goeventsnow.backend.unit.EventTest
         
   client-quality:
     name: Client - Basic CI
