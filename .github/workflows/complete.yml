@@ -5,7 +5,7 @@ on:
     branches:
       - main
 jobs:
-  full-testing:
+  full-quality-testing:
     name: Complete Quality Control (Unit, Integration & System Tests)
     runs-on: ubuntu-latest
     services:
@@ -41,44 +41,37 @@ jobs:
           npm install
 
           
-      - name: Compile Server & Run Backend Unit, Integration & System Test 
+      - name: Compile Server & Run Backend Unit & Integration Test 
         run: |
           cd backend
-          mvn clean verify -Dtest="es.goeventsnow.backend.unit.EventTest,es.goeventsnow.backend.api.EventApiTest,es.goeventsnow.backend.integration.EventBBDDTest"
+          mvn clean verify -Dtest="es.goeventsnow.backend.unit.EventTest,es.goeventsnow.backend.integration.EventBBDDTest"
 
       - name: Run Frontend Unit & Integration tests
         run: |
           cd frontend
           npx ng test --coverage 
 
-
-            # --- PASO 2: PREPARACIÓN PARA TESTS DE SISTEMA (E2E) ---
-
-      - name: Instalar herramientas de espera
+      - name: Install wait tools
         run: sudo apt-get install netcat-openbsd
 
-      - name: Arrancar Backend en segundo plano
+      - name: Run Backend
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/goeventsnow_db?useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_PASSWORD: password
         run: |
           cd backend
           mvn spring-boot:run &
-          echo "Esperando a que el backend esté listo en el puerto 8080..."
-          timeout 60s sh -c 'until nc -z localhost 8080; do sleep 5; done'
+          echo "Waiting backend to be in port 8080..."
+          timeout 120s sh -c 'until nc -z localhost 8080; do sleep 5; done'
 
-      - name: Arrancar Frontend en segundo plano
+      - name: Run Frontend
         run: |
           cd frontend
           npx ng serve --host 0.0.0.0 &
-          echo "Esperando a que el frontend esté listo en el puerto 4200..."
-          timeout 60s sh -c 'until nc -z localhost 4200; do sleep 5; done'
+          echo "Waiting frontend to be in port 4200..."
+          timeout 120s sh -c 'until nc -z localhost 4200; do sleep 5; done'
 
-      # --- PASO 3: EJECUCIÓN TEST DE SISTEMA (SELENIUM) ---
-
-      - name: Ejecutar Test de Sistema (Selenium)
-        # Este test de Java (backend) probará la UI del frontend (localhost:4200)
-        # que a su vez llama al backend (localhost:8080)
+      - name: Run Backend & Frontend System Tests
         run: |
           cd backend
-          mvn test -Dtest=es.goeventsnow.backend.e2e.SeleniumTest
+          mvn test -Dtest="es.goeventsnow.backend.e2e.SeleniumTest,es.goeventsnow.backend.api.EventApiTest"
