@@ -70,7 +70,7 @@ jobs:
       - name: Arrancar Frontend en segundo plano
         run: |
           cd frontend
-          npx ng serve &
+          npx ng serve --host 0.0.0.0 &
           echo "Esperando a que el frontend esté listo en el puerto 4200..."
           timeout 60s sh -c 'until nc -z localhost 4200; do sleep 5; done'
 
