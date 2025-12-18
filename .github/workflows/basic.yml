@@ -49,8 +49,8 @@ jobs:
       - name: Build project
         run: |
           cd frontend
-          ng build        
+          npx ng build --configuration=production       
       - name: Run frontend unitary tests
         run: |
           cd frontend
-          ng test --no-watch --browsers=ChromeHeadless --include=src/app/app.component.spec.ts
+          npx ng test --no-watch --browsers=ChromeHeadless --include=src/app/app.component.spec.ts
