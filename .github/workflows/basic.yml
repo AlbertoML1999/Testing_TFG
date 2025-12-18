@@ -53,4 +53,4 @@ jobs:
       - name: Run frontend unitary tests
         run: |
           cd frontend
-          npx ng test --no-watch --browsers=ChromeHeadless --include=src/app/app.component.spec.ts
+          npx ng test --include=src/app/app.component.spec.ts
