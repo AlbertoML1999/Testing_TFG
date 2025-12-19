@@ -32,6 +32,14 @@ jobs:
         run: |
           cd backend
           mvn clean verify -Dtest="es.goeventsnow.backend.unit.EventTest"
+      - name: SonarCloud Analysis (Backend)
+        run: |
+          cd backend
+          mvn sonar:sonar \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_BACKEND }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         
   client-quality:
     name: Client - Basic CI
@@ -57,3 +65,13 @@ jobs:
         run: |
           cd frontend
           npx ng test  --include=src/app/app.component.spec.ts  --coverage  
+      - name: SonarCloud Analysis (Frontend)
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: frontend
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_FRONTEND }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
