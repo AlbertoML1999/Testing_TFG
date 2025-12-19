@@ -57,3 +57,4 @@ jobs:
         run: |
           cd frontend
           npx ng test  --include=src/app/app.component.spec.ts  --coverage  
+      
